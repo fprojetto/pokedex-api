@@ -28,14 +28,14 @@ type server struct {
 	cfg ServerConfig
 }
 
-func NewHTTPServer(cfg ServerConfig, apiMux *http.ServeMux) (HTTPServer, error) {
+func NewHTTPServer(cfg ServerConfig, api http.Handler) (HTTPServer, error) {
 	// start server
 	ln, err := net.Listen("tcp", cfg.Addr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	mux := newRouter(apiMux)
+	mux := newRouter(api)
 	srv := &http.Server{Handler: mux}
 
 	// Ensure resources are released when the server shuts down

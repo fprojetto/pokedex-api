@@ -9,7 +9,6 @@ import (
 
 	"github.com/fprojetto/pokedex-api/api"
 	"github.com/fprojetto/pokedex-api/api/handler"
-	"github.com/fprojetto/pokedex-api/pkg/server"
 )
 
 func TestPokemonRoutes(t *testing.T) {
@@ -37,7 +36,7 @@ func TestPokemonRoutes(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		var envelope server.Envelope
+		var envelope api.Envelope
 		if err := json.Unmarshal(body, &envelope); err != nil {
 			t.Fatalf("failed to unmarshal response: %v", err)
 		}
@@ -69,7 +68,7 @@ func TestPokemonRoutes(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		var envelope server.Envelope
+		var envelope api.Envelope
 		if err := json.Unmarshal(body, &envelope); err != nil {
 			t.Fatalf("failed to unmarshal response: %v", err)
 		}

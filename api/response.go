@@ -1,9 +1,11 @@
-package server
+package api
 
 import (
 	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/fprojetto/pokedex-api/pkg/server"
 )
 
 // Envelope is the generic wrapper for all responses
@@ -28,7 +30,7 @@ const (
 )
 
 func WriteJSON(w http.ResponseWriter, r *http.Request, data any, status int) {
-	requestID := GetRequestID(r.Context())
+	requestID := server.GetRequestID(r.Context())
 	resp := Envelope{
 		Data: data,
 		Meta: &Meta{RequestID: requestID},
@@ -45,7 +47,7 @@ func WriteJSON(w http.ResponseWriter, r *http.Request, data any, status int) {
 
 // WriteError sends a structured error response
 func WriteError(w http.ResponseWriter, r *http.Request, status int, code, message string) {
-	requestID := GetRequestID(r.Context())
+	requestID := server.GetRequestID(r.Context())
 	resp := Envelope{
 		Error: &Error{
 			Code:    code,

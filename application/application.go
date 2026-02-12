@@ -11,7 +11,7 @@ import (
 	"github.com/fprojetto/pokedex-api/pkg/server"
 )
 
-func BuildAPI() *http.ServeMux {
+func BuildAPI() http.Handler {
 	getPokemonHandler := handler.GetPokemon()
 	getPokemonTranslatedHandler := handler.GetPokemonTranslated()
 	pokemonMux := api.NewPokemonRouter(
@@ -24,14 +24,14 @@ func BuildAPI() *http.ServeMux {
 
 func Run(ctx context.Context, cfg config.Config) error {
 	// build api
-	apiMux := BuildAPI()
+	api := BuildAPI()
 
 	// build and run http server
 	httpServer, err := server.NewHTTPServer(server.ServerConfig{
 		Addr:            cfg.Addr,
 		ShutdownTimeout: cfg.ShutdownTimeout,
 		OnShutdown:      shutdown,
-	}, apiMux)
+	}, api)
 	if err != nil {
 		return err
 	}

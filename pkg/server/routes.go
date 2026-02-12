@@ -4,10 +4,10 @@ import (
 	"net/http"
 )
 
-func newRouter(apiMux *http.ServeMux) *http.ServeMux {
+func newRouter(apiMux http.Handler) *http.ServeMux {
 	rootMux := http.NewServeMux()
 
-	rootMux.Handle("/api/", RequestIDMiddleware(apiMux))
+	rootMux.Handle("/api/", apiMux)
 
 	opsMux := http.NewServeMux()
 	opsMux.HandleFunc("/health", HealthCheckHandler)
