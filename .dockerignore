@@ -1,0 +1,6 @@
+.git
+.idea
+vendor
+*.out
+wiremock
+docker-compose.yml

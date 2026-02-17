@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"log"
 
 	"github.com/fprojetto/pokedex-api/application"
@@ -9,12 +10,12 @@ import (
 )
 
 func main() {
-	cfg, err := config.Load()
+	cfg, err := config.New()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(errors.Join(errors.New("failed to load configuration for the app"), err))
 	}
 
-	if err := application.Run(context.Background(), cfg); err != nil {
+	if err := application.Run(context.Background(), *cfg); err != nil {
 		log.Fatal(err)
 	}
 }

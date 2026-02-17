@@ -26,7 +26,9 @@ type Error struct {
 }
 
 const (
-	ErrCodeInternal = "INTERNAL_ERROR"
+	ErrCodeInternal   = "INTERNAL_ERROR"
+	ErrCodeNotFound   = "NOT_FOUND"
+	ErrCodeBadRequest = "BAD_REQUEST"
 )
 
 func WriteJSON(w http.ResponseWriter, r *http.Request, data any, status int) {

@@ -20,6 +20,12 @@ test:
 	@$(GO) tool cover -func=coverage.out
 	@echo "✅ Running tests complete"
 
+test-e2e:
+	@echo ">> Running e2e tests for $(APP_NAME)..."
+	@$(GO) test --tags=e2e ./e2e/... -coverprofile=coverage.out
+	@$(GO) tool cover -func=coverage.out
+	@echo "✅ Running tests complete"
+
 docker-build:
 	@echo ">> Building docker image $(APP_NAME):$(APP_TAG)..."
 	@DOCKER_BUILDKIT=1 $(DOCKER) build --no-cache -f Dockerfile -t $(APP_NAME):$(APP_TAG) .
@@ -46,6 +52,7 @@ help:
 	@echo "  make docker-build          Build the docker container for the app"
 	@echo "  make docker-run            Run the app using docker"
 	@echo "  make test                  Run tests"
+	@echo "  make test-e2e              Run test e2e (build tag e2e in e2e folder)"
 	@echo "  make run                   Run the app locally"
 	@echo "  make clean                 Remove built app binary"
 	@echo ""
