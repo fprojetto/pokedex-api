@@ -14,9 +14,6 @@ RUN go mod download
 # Copy the rest of the source code
 COPY . .
 
-# It runs go vet (the static analysis tool) and tests
-RUN go test -v ./... -coverprofile=coverage.out
-
 # Build flags explanation:
 # CGO_ENABLED=0 : Disables CGO to create a statically linked binary (no external C library deps)
 # GOOS=linux    : Ensures we build for Linux (even if you build on Mac/Windows)

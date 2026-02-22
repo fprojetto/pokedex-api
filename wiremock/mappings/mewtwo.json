@@ -1,0 +1,27 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/api/v2/pokemon-species/mewtwo"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "id": 150,
+      "name": "mewtwo",
+      "habitat": "rare",
+      "is_legendary": true,
+      "flavor_text_entries": [
+        {
+          "flavor_text": "It was created by a scientist after years of horrific gene splicing and DNA engineering experiments.",
+          "language": {
+            "name": "en",
+            "url": "https://pokeapi.co/api/v2/language/9/"
+          }
+        }
+      ]
+    }
+  }
+}

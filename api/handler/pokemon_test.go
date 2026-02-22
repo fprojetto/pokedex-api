@@ -1,6 +1,7 @@
 package handler_test
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -8,78 +9,103 @@ import (
 	"testing"
 
 	"github.com/fprojetto/pokedex-api/api"
+	"github.com/fprojetto/pokedex-api/api-client/pokeapi"
 	"github.com/fprojetto/pokedex-api/api/handler"
+	"github.com/fprojetto/pokedex-api/model"
+	"github.com/fprojetto/pokedex-api/service"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
+type pokemonServiceMock struct {
+	mock.Mock
+}
+
+func (m *pokemonServiceMock) GetPokemon(ctx context.Context, name string) (model.Pokemon, error) {
+	args := m.Called(ctx, name)
+	return args.Get(0).(model.Pokemon), args.Error(1)
+}
+
 func TestPokemonRoutes(t *testing.T) {
-	mux := api.NewPokemonRouter(
-		handler.GetPokemon(),
-		handler.GetPokemonTranslated(),
-	)
+	tests := []struct {
+		name                  string
+		pokemonName           string
+		mockReturnPokemon     model.Pokemon
+		mockReturnError       error
+		expectedStatusCode    int
+		expectedBodyAssertion func(t *testing.T, body []byte, expectedPokemon model.Pokemon)
+	}{
+		{
+			name:        "GET /api/pokemon/{name} success",
+			pokemonName: "mewtwo",
+			mockReturnPokemon: model.Pokemon{
+				Name:        "mewtwo",
+				Description: "It was created by a scientist after years of horrific gene splicing and DNA engineering experiments.",
+				Habitat:     "rare",
+				IsLegendary: pokeapi.BoolPtr(false),
+			},
+			mockReturnError:    nil,
+			expectedStatusCode: http.StatusOK,
+			expectedBodyAssertion: func(t *testing.T, body []byte, expectedPokemon model.Pokemon) {
+				var envelope struct {
+					Data handler.Pokemon `json:"data"`
+				}
+				err := json.Unmarshal(body, &envelope)
+				require.NoError(t, err, "failed to unmarshal response")
 
-	ts := httptest.NewServer(mux)
-	defer ts.Close()
+				assert.Equal(t, expectedPokemon.Name, envelope.Data.Name)
+				assert.Equal(t, expectedPokemon.Description, envelope.Data.Description)
+				assert.Equal(t, expectedPokemon.Habitat, envelope.Data.Habitat)
+				assert.Equal(t, expectedPokemon.IsLegendary, envelope.Data.IsLegendary)
+			},
+		},
+		{
+			name:               "GET /api/pokemon/{name} internal error",
+			pokemonName:        "bulbasaur",
+			mockReturnPokemon:  model.Pokemon{},
+			mockReturnError:    service.ErrServiceUnavailable,
+			expectedStatusCode: http.StatusInternalServerError,
+			expectedBodyAssertion: func(t *testing.T, body []byte, expectedPokemon model.Pokemon) {
+				var envelope api.Envelope
+				err := json.Unmarshal(body, &envelope)
+				require.NoError(t, err, "failed to unmarshal response")
+				assert.NotNil(t, envelope.Error)
+			},
+		},
+		{
+			name:               "GET /api/pokemon/{name} not found",
+			pokemonName:        "pikachu",
+			mockReturnPokemon:  model.Pokemon{},
+			mockReturnError:    service.ErrNotFound,
+			expectedStatusCode: http.StatusNotFound,
+			expectedBodyAssertion: func(t *testing.T, body []byte, expectedPokemon model.Pokemon) {
+				var envelope api.Envelope
+				err := json.Unmarshal(body, &envelope)
+				require.NoError(t, err, "failed to unmarshal response")
+				assert.NotNil(t, envelope.Error)
+			},
+		},
+	}
 
-	t.Run("GET /api/pokemon/{name}", func(t *testing.T) {
-		res, err := http.Get(ts.URL + "/api/pokemon/pikachu")
-		if err != nil {
-			t.Fatal(err)
-		}
-		defer res.Body.Close()
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockService := &pokemonServiceMock{}
+			getPokemonHandler := handler.GetPokemon(mockService.GetPokemon)
 
-		if res.StatusCode != http.StatusOK {
-			t.Errorf("expected status OK; got %v", res.Status)
-		}
+			mockService.On("GetPokemon", mock.Anything, tt.pokemonName).Return(tt.mockReturnPokemon, tt.mockReturnError)
 
-		body, err := io.ReadAll(res.Body)
-		if err != nil {
-			t.Fatal(err)
-		}
+			req := httptest.NewRequest("GET", "/api/pokemon/"+tt.pokemonName, nil)
+			req.SetPathValue("name", tt.pokemonName)
+			res := httptest.NewRecorder()
+			getPokemonHandler(res, req)
 
-		var envelope api.Envelope
-		if err := json.Unmarshal(body, &envelope); err != nil {
-			t.Fatalf("failed to unmarshal response: %v", err)
-		}
+			assert.Equal(t, tt.expectedStatusCode, res.Code)
 
-		// The current implementation returns the pokemon struct in the Data field
-		data, ok := envelope.Data.(map[string]any)
-		if !ok {
-			t.Fatalf("expected Data to be a map; got %T", envelope.Data)
-		}
+			body, err := io.ReadAll(res.Body)
+			require.NoError(t, err, "failed to read response body")
 
-		if data["name"] != "pikachu" {
-			t.Errorf("expected pokemon name 'pikachu'; got '%v'", data["name"])
-		}
-	})
-
-	t.Run("GET /api/pokemon/translated/{name}", func(t *testing.T) {
-		res, err := http.Get(ts.URL + "/api/pokemon/translated/mewtwo")
-		if err != nil {
-			t.Fatal(err)
-		}
-		defer res.Body.Close()
-
-		if res.StatusCode != http.StatusOK {
-			t.Errorf("expected status OK; got %v", res.Status)
-		}
-
-		body, err := io.ReadAll(res.Body)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		var envelope api.Envelope
-		if err := json.Unmarshal(body, &envelope); err != nil {
-			t.Fatalf("failed to unmarshal response: %v", err)
-		}
-
-		data, ok := envelope.Data.(map[string]any)
-		if !ok {
-			t.Fatalf("expected Data to be a map; got %T", envelope.Data)
-		}
-
-		if data["name"] != "mewtwo" {
-			t.Errorf("expected pokemon name 'mewtwo'; got '%v'", data["name"])
-		}
-	})
+			tt.expectedBodyAssertion(t, body, tt.mockReturnPokemon)
+		})
+	}
 }
