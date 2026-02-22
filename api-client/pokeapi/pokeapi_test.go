@@ -9,6 +9,7 @@ import (
 
 	"github.com/fprojetto/pokedex-api/api-client/pokeapi"
 	"github.com/fprojetto/pokedex-api/model"
+	"github.com/fprojetto/pokedex-api/pkg/client"
 	"github.com/fprojetto/pokedex-api/service"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -31,7 +32,7 @@ func TestPokemonInfo(t *testing.T) {
 				ID:          25,
 				Name:        "pikachu",
 				Habitat:     "forest",
-				IsLegendary: pokeapi.BoolPtr(false),
+				IsLegendary: client.BoolPtr(false),
 				FlavorTextEntries: []pokeapi.FlavorTextEntry{
 					{
 						FlavorText: "When several of these POKéMON gather, their electricity could build and cause lightning storms.",
@@ -46,7 +47,7 @@ func TestPokemonInfo(t *testing.T) {
 				Name:        "pikachu",
 				Description: "When several of these POKéMON gather, their electricity could build and cause lightning storms.",
 				Habitat:     "forest",
-				IsLegendary: pokeapi.BoolPtr(false),
+				IsLegendary: client.BoolPtr(false),
 			},
 			expectedError: nil,
 		},

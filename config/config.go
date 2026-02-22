@@ -10,7 +10,8 @@ type Config struct {
 	Addr            string
 	ShutdownTimeout time.Duration
 
-	PokemonAPIURL string
+	PokemonAPIURL     string
+	TranslationAPIURL string
 }
 
 func New() (*Config, error) {
@@ -24,11 +25,17 @@ func New() (*Config, error) {
 		return nil, errors.New("missing POKEMON_API_URL environment variable")
 	}
 
+	translationAPIURL := os.Getenv("TRANSLATION_API_URL")
+	if translationAPIURL == "" {
+		return nil, errors.New("missing TRANSLATION_API_URL environment variable")
+	}
+
 	cfg := Config{
 		Addr:            ":" + port,
 		ShutdownTimeout: 5 * time.Second,
 
-		PokemonAPIURL: pokemonAPIURL,
+		PokemonAPIURL:     pokemonAPIURL,
+		TranslationAPIURL: translationAPIURL,
 	}
 
 	return &cfg, nil

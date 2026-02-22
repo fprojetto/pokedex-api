@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
 	"github.com/fprojetto/pokedex-api/api"
@@ -17,6 +18,7 @@ type Pokemon struct {
 }
 
 type PokemonGetter func(ctx context.Context, name string) (model.Pokemon, error)
+type PokemonGetterTranslator func(ctx context.Context, name string) (model.Pokemon, error)
 
 func GetPokemon(getPokemon PokemonGetter) func(w http.ResponseWriter, req *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {
@@ -27,31 +29,52 @@ func GetPokemon(getPokemon PokemonGetter) func(w http.ResponseWriter, req *http.
 		}
 		p, err := getPokemon(req.Context(), name)
 		if err != nil {
-			switch err {
-			case service.ErrNotFound:
-				api.WriteError(w, req, http.StatusNotFound, api.ErrCodeNotFound, err.Error())
-			default:
-				api.WriteError(w, req, http.StatusInternalServerError, api.ErrCodeInternal, err.Error())
-			}
+			handleError(w, req, err)
 			return
 		}
 
-		pokemon := Pokemon{
-			Name:        p.Name,
-			Description: p.Description,
-			Habitat:     p.Habitat,
-			IsLegendary: p.IsLegendary,
-		}
+		pokemon := mapper(p)
 
 		api.WriteJSON(w, req, pokemon, http.StatusOK)
 	}
 }
 
-func GetPokemonTranslated() func(w http.ResponseWriter, req *http.Request) {
+func GetPokemonTranslated(
+	getPokemonTranslated PokemonGetterTranslator,
+) func(w http.ResponseWriter, req *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {
 		name := req.PathValue("name")
+		if name == "" {
+			api.WriteError(w, req, http.StatusBadRequest, api.ErrCodeBadRequest, "missing name parameter")
+			return
+		}
+		
+		p, err := getPokemonTranslated(req.Context(), name)
+		if err != nil {
+			handleError(w, req, err)
+			return
+		}
 
-		p := Pokemon{Name: name}
-		api.WriteJSON(w, req, p, http.StatusOK)
+		pokemon := mapper(p)
+
+		api.WriteJSON(w, req, pokemon, http.StatusOK)
+	}
+}
+
+func mapper(p model.Pokemon) Pokemon {
+	return Pokemon{
+		Name:        p.Name,
+		Description: p.Description,
+		Habitat:     p.Habitat,
+		IsLegendary: p.IsLegendary,
+	}
+}
+
+func handleError(w http.ResponseWriter, req *http.Request, err error) {
+	switch {
+	case errors.Is(err, service.ErrNotFound):
+		api.WriteError(w, req, http.StatusNotFound, api.ErrCodeNotFound, err.Error())
+	default:
+		api.WriteError(w, req, http.StatusInternalServerError, api.ErrCodeInternal, err.Error())
 	}
 }
