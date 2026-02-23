@@ -15,13 +15,17 @@ The application requires the following environment variables:
 
 - `PORT`: The port the server will listen on (default: `8080`).
 - `POKEMON_API_URL`: The base URL for the PokeAPI (e.g., `https://pokeapi.co`).
+- `TRANSLATION_API_URL`: The base URL for the funtranslationsAPI (e.g., `https://api.funtranslations.com`).
 
 ### 2. Running Locally
 
 To run the application directly on your machine:
 
+NOTE: it seems like the free version of the Funtranslations API doesn't work anymore.
+
 ```bash
 export POKEMON_API_URL=https://pokeapi.co
+export POKEMON_API_URL=https://api.funtranslations.com
 go run ./cmd/api
 ```
 
@@ -34,23 +38,15 @@ make build
 
 ### 3. Running with Docker Compose (and WireMock)
 
-To run the application along with a mocked PokeAPI (WireMock) for testing:
+To run the application along with a mocked PokeAPI and FunTranslationsAPI (WireMock) for testing:
 
 ```bash
 docker-compose up --build
 ```
 
 - The API will be available at `http://localhost:8080`.
-- WireMock admin/mock interface will be at `http://localhost:8081`.
+- WireMock admin/mock interface will be at `http://localhost:8081` and `http://localhost:8082`.
 
-### 4. Interacting with the API
-
-You can reach the API by making http requests.
-For example:
-
-```bash
-curl http://localhost:8080/api/pokemon/mewtwo
-```
 
 ## Testing
 
@@ -75,3 +71,12 @@ make test-e2e
 - `GET /health`: Health check endpoint.
 - `GET /api/pokemon/{name}`: Get basic information about a Pokemon.
 - `GET /api/pokemon/translated/{name}`: Get information about a Pokemon with translated descriptions.
+
+Example requests:
+
+```bash
+curl http://localhost:8080/api/pokemon/mewtwo
+
+curl http://localhost:8080/api/pokemon/translated/mewtwo
+
+```
