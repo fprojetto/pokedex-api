@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fprojetto/pokedex-api/application"
-	"github.com/fprojetto/pokedex-api/config"
+	"github.com/fprojetto/pokedex-api/internal/application"
+	"github.com/fprojetto/pokedex-api/internal/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

@@ -5,8 +5,8 @@ import (
 	"errors"
 	"log"
 
-	"github.com/fprojetto/pokedex-api/application"
-	"github.com/fprojetto/pokedex-api/config"
+	"github.com/fprojetto/pokedex-api/internal/application"
+	"github.com/fprojetto/pokedex-api/internal/config"
 )
 
 func main() {

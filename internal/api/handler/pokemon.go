@@ -5,9 +5,9 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/fprojetto/pokedex-api/api"
-	"github.com/fprojetto/pokedex-api/model"
-	"github.com/fprojetto/pokedex-api/service"
+	"github.com/fprojetto/pokedex-api/internal/api"
+	"github.com/fprojetto/pokedex-api/internal/model"
+	"github.com/fprojetto/pokedex-api/internal/service"
 )
 
 type Pokemon struct {
@@ -48,7 +48,7 @@ func GetPokemonTranslated(
 			api.WriteError(w, req, http.StatusBadRequest, api.ErrCodeBadRequest, "missing name parameter")
 			return
 		}
-		
+
 		p, err := getPokemonTranslated(req.Context(), name)
 		if err != nil {
 			handleError(w, req, err)

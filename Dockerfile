@@ -18,7 +18,7 @@ COPY . .
 # CGO_ENABLED=0 : Disables CGO to create a statically linked binary (no external C library deps)
 # GOOS=linux    : Ensures we build for Linux (even if you build on Mac/Windows)
 # -ldflags="-w -s" : Strips DWARF debug info and symbol tables to reduce binary size by ~30%
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o server ./cmd/api
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o server ./internal/cmd/api
 
 # ------------------------------------------------------------------------------
 # STAGE 2: The Production Image
