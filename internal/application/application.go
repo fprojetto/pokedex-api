@@ -5,13 +5,13 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/fprojetto/pokedex-api/api"
-	"github.com/fprojetto/pokedex-api/api-client/pokeapi"
-	"github.com/fprojetto/pokedex-api/api-client/translationapi"
-	"github.com/fprojetto/pokedex-api/api/handler"
-	"github.com/fprojetto/pokedex-api/config"
+	"github.com/fprojetto/pokedex-api/internal/api"
+	"github.com/fprojetto/pokedex-api/internal/api-client/pokeapi"
+	"github.com/fprojetto/pokedex-api/internal/api-client/translationapi"
+	"github.com/fprojetto/pokedex-api/internal/api/handler"
+	"github.com/fprojetto/pokedex-api/internal/config"
+	"github.com/fprojetto/pokedex-api/internal/service"
 	"github.com/fprojetto/pokedex-api/pkg/server"
-	"github.com/fprojetto/pokedex-api/service"
 )
 
 func BuildAPI(pokemonGetter handler.PokemonGetter, pokemonGetterTranslated handler.PokemonGetterTranslator) http.Handler {

@@ -7,10 +7,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/fprojetto/pokedex-api/api-client/pokeapi"
-	"github.com/fprojetto/pokedex-api/model"
+	"github.com/fprojetto/pokedex-api/internal/api-client/pokeapi"
+	"github.com/fprojetto/pokedex-api/internal/model"
+	"github.com/fprojetto/pokedex-api/internal/service"
 	"github.com/fprojetto/pokedex-api/pkg/client"
-	"github.com/fprojetto/pokedex-api/service"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

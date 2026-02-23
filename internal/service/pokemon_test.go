@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/fprojetto/pokedex-api/model"
+	"github.com/fprojetto/pokedex-api/internal/model"
 	"github.com/fprojetto/pokedex-api/pkg/client"
 	"github.com/stretchr/testify/assert"
 )

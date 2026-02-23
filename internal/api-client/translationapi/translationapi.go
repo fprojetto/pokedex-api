@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/fprojetto/pokedex-api/internal/service"
 	"github.com/fprojetto/pokedex-api/pkg/client"
-	"github.com/fprojetto/pokedex-api/service"
 )
 
 // SuccessInfo represents the success details of a translation API response.

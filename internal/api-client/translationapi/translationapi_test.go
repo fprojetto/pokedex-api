@@ -8,8 +8,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/fprojetto/pokedex-api/api-client/translationapi"
-	"github.com/fprojetto/pokedex-api/service"
+	"github.com/fprojetto/pokedex-api/internal/api-client/translationapi"
+	"github.com/fprojetto/pokedex-api/internal/service"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -35,8 +35,8 @@ func TestTranslationClient_Translate(t *testing.T) {
 					Total: 1,
 				},
 				Contents: translationapi.TranslationContent{
-					Translated: "hello, you must",
-					Text:       "hello",
+					Translated:  "hello, you must",
+					Text:        "hello",
 					Translation: "yoda",
 				},
 			},
@@ -54,8 +54,8 @@ func TestTranslationClient_Translate(t *testing.T) {
 					Total: 1,
 				},
 				Contents: translationapi.TranslationContent{
-					Translated: "Hark, greetings!",
-					Text:       "hello",
+					Translated:  "Hark, greetings!",
+					Text:        "hello",
 					Translation: "shakespeare",
 				},
 			},
@@ -89,11 +89,11 @@ func TestTranslationClient_Translate(t *testing.T) {
 			expectedError: service.ErrServiceUnavailable,
 		},
 		{
-			name:       "invalid json response",
-			style:      service.Yoda,
-			text:       "hello",
-			mockStatus: http.StatusOK,
-			mockResponse: "this is not valid json", // Invalid JSON
+			name:          "invalid json response",
+			style:         service.Yoda,
+			text:          "hello",
+			mockStatus:    http.StatusOK,
+			mockResponse:  "this is not valid json", // Invalid JSON
 			expectedError: errors.Join(errors.New("invalid character 'h' in literal true (expecting 'r')"), service.ErrServiceUnavailable),
 		},
 	}

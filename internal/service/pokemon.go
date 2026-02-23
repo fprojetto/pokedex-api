@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/fprojetto/pokedex-api/model"
+	"github.com/fprojetto/pokedex-api/internal/model"
 )
 
 var (

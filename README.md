@@ -2,6 +2,30 @@
 
 A Go-based API that provides information about Pokemon, with support for translations.
 
+## Things to consider before going to production
+
+- Needs work to make it observable. 
+  - Needs proper logging statements and configuration.
+  - Needs setup for telemetry.
+  - Needs setup for monitoring/alerting.
+- Needs work to make it more resilient to external API failures.
+  - Needs setup for retries and timeouts.
+  - Consider setting up circuit breakers.
+- I have chosen not to use only golang standard libraries to make it easier to understand to newcomers. 
+  - The pkg folder contains code to run the server, and it needs tests to be written.
+  - Using a lightweight library to handle the HTTP server could be considered.
+- Deployment pipelines for staging/prod are not set up.
+  - I would like to have a staging environment for testing integrations with the external APIs before deploying to production.
+- The API is not secured.
+
+## Notes about the project
+- The `pkg` folder contains the code to run the http server and clients.
+- The `internal` folder contains the application business logic.
+  - I have used a traditional layered architecture with domain, controller and service layers.
+  - I have used principle from hexagonal architecture to separate the business logic from the external components: http endpoints and clients.
+  - I have used SOLID principles to make the code easier to change, test and maintain.
+  - I have used unit tests and e2e tests to ensure the application is working as expected.
+
 ## Prerequisites
 
 - If you run it locally, [Go](https://go.dev/) 1.24 or higher 
