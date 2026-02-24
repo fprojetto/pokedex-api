@@ -109,15 +109,22 @@ func TestPokemonInfo(t *testing.T) {
 			},
 			expectedError: service.ErrNotFound,
 		},
+		{
+			name:        "api not found with escaped path",
+			pokemonName: "../admin",
+			mockStatus:  http.StatusNotFound,
+			mockResponse: map[string]string{
+				"error": "not found",
+			},
+			expectedError: service.ErrNotFound,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				expectedPath := "/api/v2/pokemon-species/" + tt.pokemonName
-				if r.URL.Path != expectedPath {
-					t.Errorf("expected path %s, got %s", expectedPath, r.URL.Path)
-				}
+				assert.Equal(t, expectedPath, r.URL.Path)
 				w.WriteHeader(tt.mockStatus)
 				json.NewEncoder(w).Encode(tt.mockResponse)
 			}))
