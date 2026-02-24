@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/fprojetto/pokedex-api/internal/model"
@@ -92,7 +92,8 @@ func tryToFindEnglishDescription(entries []FlavorTextEntry) string {
 }
 
 func (c *PokemonClient) getBasicInfo(ctx context.Context, name string) (*http.Response, error) {
-	getPokemonURL := fmt.Sprintf("%s/api/v2/pokemon-species/%s", c.pokeAPIURL, name)
+	escapedName := url.PathEscape(name)
+	getPokemonURL, err := url.JoinPath(c.pokeAPIURL, "/api/v2/pokemon-species/", escapedName)
 	req, err := http.NewRequestWithContext(ctx, "GET", getPokemonURL, nil)
 	if err != nil {
 		return nil, err

@@ -5,8 +5,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/fprojetto/pokedex-api/internal/service"
 	"github.com/fprojetto/pokedex-api/pkg/client"
@@ -61,7 +61,8 @@ func (c *TranslationClient) Translate(ctx context.Context, style service.Transla
 		return "", errors.New("unsupported translation style")
 	}
 
-	getTranslationURL := fmt.Sprintf("%s/translate/%s", c.translationAPIURL, translatorServiceName)
+	getTranslationURL, err := url.JoinPath(c.translationAPIURL, "/translate/", translatorServiceName)
+
 	translationRequest := TranslationRequest{Text: text}
 	jsonBody, err := json.Marshal(translationRequest)
 	if err != nil {
