@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"errors"
+	"log"
 	"net/http"
 
 	"github.com/fprojetto/pokedex-api/internal/api"
@@ -73,8 +74,11 @@ func mapper(p model.Pokemon) Pokemon {
 func handleError(w http.ResponseWriter, req *http.Request, err error) {
 	switch {
 	case errors.Is(err, service.ErrNotFound):
-		api.WriteError(w, req, http.StatusNotFound, api.ErrCodeNotFound, err.Error())
+		log.Printf("not found error: %v", err)
+		api.WriteError(w, req, http.StatusNotFound, api.ErrCodeNotFound, "resource not found")
 	default:
-		api.WriteError(w, req, http.StatusInternalServerError, api.ErrCodeInternal, err.Error())
+		// Log the actual error for internal tracking, but return a generic message to the client
+		log.Printf("internal server error: %v", err)
+		api.WriteError(w, req, http.StatusInternalServerError, api.ErrCodeInternal, "internal server error")
 	}
 }

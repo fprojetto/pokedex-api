@@ -76,6 +76,7 @@ func TestGetPokemon(t *testing.T) {
 				err := json.Unmarshal(body, &envelope)
 				require.NoError(t, err, "failed to unmarshal response")
 				assert.NotNil(t, envelope.Error)
+				assert.Equal(t, "internal server error", envelope.Error.Message)
 			},
 		},
 		{
@@ -89,6 +90,7 @@ func TestGetPokemon(t *testing.T) {
 				err := json.Unmarshal(body, &envelope)
 				require.NoError(t, err, "failed to unmarshal response")
 				assert.NotNil(t, envelope.Error)
+				assert.Equal(t, "resource not found", envelope.Error.Message)
 			},
 		},
 	}
@@ -159,6 +161,7 @@ func TestGetPokemonTranslated(t *testing.T) {
 				err := json.Unmarshal(body, &envelope)
 				require.NoError(t, err, "failed to unmarshal response")
 				assert.NotNil(t, envelope.Error)
+				assert.Equal(t, "internal server error", envelope.Error.Message)
 			},
 		},
 		{
@@ -172,6 +175,7 @@ func TestGetPokemonTranslated(t *testing.T) {
 				err := json.Unmarshal(body, &envelope)
 				require.NoError(t, err, "failed to unmarshal response")
 				assert.NotNil(t, envelope.Error)
+				assert.Equal(t, "resource not found", envelope.Error.Message)
 			},
 		},
 	}
